@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Customers · RetailFlow{% endblock %}
+{% block crumb %}People / Customers{% endblock %}
+{% block heading %}Customers{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Manage customer records and contact information.</p><button class="button button-primary" onclick="document.getElementById('addCustomer').showModal()">+ Add customer</button></div>
+<div class="filter-bar"><div class="search-box"><span>⌕</span><input id="customerSearch" onkeyup="filterTable('customerSearch','customerTable')" placeholder="Search customers or addresses..."></div><div class="filter-hint">{{ customers|length }} records</div></div>
+<section class="panel"><div class="table-scroll"><table class="data-table" id="customerTable">
+<thead><tr><th>CUSTOMER</th><th>DATE OF BIRTH</th><th>ADDRESS</th><th></th></tr></thead>
+<tbody>
+{% for c in customers %}
+<tr><td><div class="person-cell"><div class="avatar small">{{ (c.firstname[0] ~ c.lastname[0])|upper }}</div><div><strong>{{ c.firstname }} {{ c.lastname }}</strong><small>Customer #{{ c.customerID }}</small></div></div></td><td class="muted-cell">{{ c.dateofbirth }}</td><td>{{ c.address }}</td><td><div class="row-actions"><button class="action-btn edit" onclick='editCustomer({{ c|tojson }})'>Edit</button><form method="post" action="{{ url_for('delete_customer', customer_id=c.customerID) }}" onsubmit="return confirm('Delete this customer?');"><button class="action-btn delete">Delete</button></form></div></td></tr>
+{% else %}<tr><td colspan="4" class="empty-state">No customers found.</td></tr>{% endfor %}
+</tbody></table></div></section>
+
+<dialog id="addCustomer" class="modal"><form method="post" action="{{ url_for('add_customer') }}" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">NEW RECORD</span><h2>Add customer</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid"><label>First name<input name="firstname" required></label><label>Last name<input name="lastname" required></label><label>Date of birth<input name="dateofbirth" type="date"></label><label class="wide">Address<input name="address" required></label></div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Create customer</button></div>
+</form></dialog>
+
+<dialog id="editCustomer" class="modal"><form method="post" id="editCustomerForm" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">EDIT RECORD</span><h2>Edit customer</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid"><label>First name<input id="cf" name="firstname" required></label><label>Last name<input id="cl" name="lastname" required></label><label>Date of birth<input id="cd" name="dateofbirth" type="date"></label><label class="wide">Address<input id="ca" name="address" required></label></div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Save changes</button></div>
+</form></dialog>
+<script>
+function filterTable(i,t){const q=document.getElementById(i).value.toLowerCase();document.querySelectorAll('#'+t+' tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')}
+function editCustomer(c){document.getElementById('editCustomerForm').action='/customers/update/'+c.customerID;document.getElementById('cf').value=c.firstname||'';document.getElementById('cl').value=c.lastname||'';document.getElementById('cd').value=c.dateofbirth||'';document.getElementById('ca').value=c.address||'';document.getElementById('editCustomer').showModal()}
+</script>
+{% endblock %}

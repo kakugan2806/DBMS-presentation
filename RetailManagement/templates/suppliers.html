@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Suppliers · RetailFlow{% endblock %}
+{% block crumb %}Partners / Suppliers{% endblock %}
+{% block heading %}Suppliers{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Manage the businesses that supply your inventory.</p><button class="button button-primary" onclick="document.getElementById('addSupplier').showModal()">+ Add supplier</button></div>
+<div class="filter-bar"><div class="search-box"><span>⌕</span><input id="supplierSearch" onkeyup="filterTable('supplierSearch','supplierTable')" placeholder="Search suppliers, contacts or email..."></div><div class="filter-hint">{{ suppliers|length }} records</div></div>
+<section class="panel"><div class="table-scroll"><table class="data-table" id="supplierTable">
+<thead><tr><th>SUPPLIER</th><th>CONTACT</th><th>PHONE</th><th>EMAIL</th><th>LAST DELIVERY</th><th></th></tr></thead>
+<tbody>
+{% for s in suppliers %}
+<tr><td><div class="person-cell"><div class="supplier-mark">{{ s.suppliername[0]|upper }}</div><div><strong>{{ s.suppliername }}</strong><small>Supplier #{{ s.supplierID }}</small></div></div></td><td>{{ s.contactname }}</td><td>{{ s.phone }}</td><td>{{ s.email }}</td><td class="muted-cell">{{ s.lastdeliverydate }}</td><td><div class="row-actions"><button class="action-btn edit" onclick='editSupplier({{ s|tojson }})'>Edit</button><form method="post" action="{{ url_for('delete_supplier', supplier_id=s.supplierID) }}" onsubmit="return confirm('Delete this supplier?');"><button class="action-btn delete">Delete</button></form></div></td></tr>
+{% else %}<tr><td colspan="6" class="empty-state">No suppliers found.</td></tr>{% endfor %}
+</tbody></table></div></section>
+
+<dialog id="addSupplier" class="modal"><form method="post" action="{{ url_for('add_supplier') }}" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">NEW RECORD</span><h2>Add supplier</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid"><label>Supplier name<input name="suppliername" required></label><label>Contact name<input name="contactname" required></label><label>Address<input name="address" required></label><label>Phone<input name="phone" required></label><label>Email<input name="email" type="email"></label><label>Last delivery<input name="lastdeliverydate" type="date"></label></div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Create supplier</button></div>
+</form></dialog>
+
+<dialog id="editSupplier" class="modal"><form method="post" id="editSupplierForm" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">EDIT RECORD</span><h2>Edit supplier</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid"><label>Supplier name<input id="sn" name="suppliername" required></label><label>Contact name<input id="sc" name="contactname" required></label><label>Address<input id="sa" name="address" required></label><label>Phone<input id="sp" name="phone" required></label><label>Email<input id="se" name="email" type="email"></label><label>Last delivery<input id="sd" name="lastdeliverydate" type="date"></label></div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Save changes</button></div>
+</form></dialog>
+<script>
+function filterTable(i,t){const q=document.getElementById(i).value.toLowerCase();document.querySelectorAll('#'+t+' tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')}
+function editSupplier(s){document.getElementById('editSupplierForm').action='/suppliers/update/'+s.supplierID;document.getElementById('sn').value=s.suppliername||'';document.getElementById('sc').value=s.contactname||'';document.getElementById('sa').value=s.address||'';document.getElementById('sp').value=s.phone||'';document.getElementById('se').value=s.email||'';document.getElementById('sd').value=s.lastdeliverydate||'';document.getElementById('editSupplier').showModal()}
+</script>
+{% endblock %}

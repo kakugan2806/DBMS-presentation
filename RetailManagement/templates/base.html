@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RetailFlow{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-mark"><span>R</span></div>
+            <div class="brand-copy">
+                <strong>Retail<span>Flow</span></strong>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <nav class="main-nav">
+            <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <span class="nav-icon">⌂</span><span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('products') }}" class="{% if request.endpoint == 'products' %}active{% endif %}">
+                <span class="nav-icon">▦</span><span>Products</span>
+            </a>
+            <a href="{{ url_for('customers') }}" class="{% if request.endpoint == 'customers' %}active{% endif %}">
+                <span class="nav-icon">♙</span><span>Customers</span>
+            </a>
+            <a href="{{ url_for('suppliers') }}" class="{% if request.endpoint == 'suppliers' %}active{% endif %}">
+                <span class="nav-icon">◈</span><span>Suppliers</span>
+            </a>
+            <a href="{{ url_for('orders') }}" class="{% if request.endpoint == 'orders' %}active{% endif %}">
+                <span class="nav-icon">▤</span><span>Orders</span>
+            </a>
+            <div class="nav-label secondary">INSIGHTS</div>
+            <a href="{{ url_for('orderdetails') }}" class="{% if request.endpoint == 'orderdetails' %}active{% endif %}">
+                <span class="nav-icon">≡</span><span>Order Details</span>
+            </a>
+            <a href="{{ url_for('reviews') }}" class="{% if request.endpoint == 'reviews' %}active{% endif %}">
+                <span class="nav-icon">★</span><span>Reviews</span>
+            </a>
+            <a href="{{ url_for('inventorylog') }}" class="{% if request.endpoint == 'inventorylog' %}active{% endif %}">
+                <span class="nav-icon">↕</span><span>Inventory Log</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="connection-card">
+                <div class="connection-top"><span class="live-dot"></span><strong>Database online</strong></div>
+                <small>retailmanagement · MySQL</small>
+            </div>
+            <div class="user-card">
+                <div class="avatar">RM</div>
+                <div><strong>Administrator</strong><small>Local workspace</small></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <button class="mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+            <div class="page-heading">
+                <div class="breadcrumb">RETAIL MANAGEMENT <span>/</span> {% block crumb %}Overview{% endblock %}</div>
+                <h1>{% block heading %}Dashboard{% endblock %}</h1>
+            </div>
+            <div class="top-actions">
+                <div class="system-pill"><span class="live-dot"></span> Live</div>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="toast-stack">
+            {% for category, message in messages %}
+            <div class="toast {{ category }}">
+                <span class="toast-icon">{% if category == 'success' %}✓{% else %}!{% endif %}</span>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

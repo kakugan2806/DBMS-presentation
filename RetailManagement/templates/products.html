@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Products · RetailFlow{% endblock %}
+{% block crumb %}Catalogue / Products{% endblock %}
+{% block heading %}Products{% endblock %}
+{% block content %}
+<div class="page-toolbar">
+    <div><p class="page-subtitle">Manage your product catalogue and stock levels.</p></div>
+    <button class="button button-primary" onclick="document.getElementById('addProduct').showModal()"><span>+</span> Add product</button>
+</div>
+
+<div class="filter-bar">
+    <div class="search-box"><span>⌕</span><input id="productSearch" onkeyup="filterTable('productSearch','productTable')" placeholder="Search products, categories or suppliers..."></div>
+    <div class="filter-hint">{{ products|length }} records</div>
+</div>
+
+<section class="panel">
+<div class="table-scroll">
+<table class="data-table" id="productTable">
+<thead><tr><th>PRODUCT</th><th>CATEGORY</th><th>PRICE</th><th>COST</th><th>STOCK</th><th>SUPPLIER</th><th>LAST RESTOCK</th><th></th></tr></thead>
+<tbody>
+{% for p in products %}
+<tr>
+<td><div class="product-cell"><div class="product-thumb">{{ p.ProductName[0]|upper }}</div><div><strong>{{ p.ProductName }}</strong><small>{{ p.Description }}</small></div></div></td>
+<td><span class="category-chip">{{ p.Category }}</span></td>
+<td><strong>₹{{ p.Price }}</strong></td>
+<td class="muted-cell">₹{{ p.CostPrice }}</td>
+<td><div class="stock-cell"><strong class="{% if p.StockQuantity <= p.ReorderLevel %}danger-text{% endif %}">{{ p.StockQuantity }}</strong><small>min {{ p.ReorderLevel }}</small></div></td>
+<td>{{ p.suppliername or ('#' ~ p.supplierID) }}</td>
+<td class="muted-cell">{{ p.LastRestockDate }}</td>
+<td><div class="row-actions">
+<button class="action-btn edit" onclick='editProduct({{ p|tojson }})'>Edit</button>
+<form method="post" action="{{ url_for('delete_product', product_id=p.ProductID) }}" onsubmit="return confirm('Delete {{ p.ProductName }}?');"><button class="action-btn delete">Delete</button></form>
+</div></td>
+</tr>
+{% else %}<tr><td colspan="8" class="empty-state">No products found.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+
+<dialog id="addProduct" class="modal">
+<form method="post" action="{{ url_for('add_product') }}" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">NEW RECORD</span><h2>Add product</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid">
+<label>Product name<input name="ProductName" placeholder="e.g. Wireless Keyboard" required></label>
+<label>Category<input name="Category" placeholder="e.g. Electronics" required></label>
+<label class="wide">Description<textarea name="Description" placeholder="Short product description" required></textarea></label>
+<label>Price<input name="Price" type="number" step="0.01" placeholder="0.00" required></label>
+<label>Cost price<input name="CostPrice" type="number" step="0.01" placeholder="0.00" required></label>
+<label>Supplier<select name="supplierID" required>{% for s in suppliers %}<option value="{{ s.supplierID }}">{{ s.suppliername }}</option>{% endfor %}</select></label>
+<label>Stock quantity<input name="StockQuantity" type="number" min="0" required></label>
+<label>Reorder level<input name="ReorderLevel" type="number" min="0" required></label>
+<label>Last restock<input name="LastRestockDate" type="date"></label>
+</div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Create product</button></div>
+</form>
+</dialog>
+
+<dialog id="editProduct" class="modal">
+<form method="post" id="editProductForm" class="modal-form">
+<div class="modal-top"><div><span class="section-kicker">EDIT RECORD</span><h2>Edit product</h2></div><button type="button" class="close-btn" onclick="this.closest('dialog').close()">×</button></div>
+<div class="form-grid">
+<label>Product name<input id="eName" name="ProductName" required></label>
+<label>Category<input id="eCategory" name="Category" required></label>
+<label class="wide">Description<textarea id="eDescription" name="Description" required></textarea></label>
+<label>Price<input id="ePrice" name="Price" type="number" step="0.01" required></label>
+<label>Cost price<input id="eCost" name="CostPrice" type="number" step="0.01" required></label>
+<label>Supplier<select id="eSupplier" name="supplierID" required>{% for s in suppliers %}<option value="{{ s.supplierID }}">{{ s.suppliername }}</option>{% endfor %}</select></label>
+<label>Stock quantity<input id="eStock" name="StockQuantity" type="number" min="0" required></label>
+<label>Reorder level<input id="eReorder" name="ReorderLevel" type="number" min="0" required></label>
+<label>Last restock<input id="eDate" name="LastRestockDate" type="date"></label>
+</div>
+<div class="modal-footer"><button type="button" class="button button-secondary" onclick="this.closest('dialog').close()">Cancel</button><button class="button button-primary">Save changes</button></div>
+</form>
+</dialog>
+
+<script>
+function filterTable(inputId, tableId) {
+    const q = document.getElementById(inputId).value.toLowerCase();
+    document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+function editProduct(p) {
+    document.getElementById('editProductForm').action = '/products/update/' + p.ProductID;
+    document.getElementById('eName').value = p.ProductName || '';
+    document.getElementById('eCategory').value = p.Category || '';
+    document.getElementById('eDescription').value = p.Description || '';
+    document.getElementById('ePrice').value = p.Price || '';
+    document.getElementById('eCost').value = p.CostPrice || '';
+    document.getElementById('eSupplier').value = p.supplierID || '';
+    document.getElementById('eStock').value = p.StockQuantity || 0;
+    document.getElementById('eReorder').value = p.ReorderLevel || 0;
+    document.getElementById('eDate').value = p.LastRestockDate || '';
+    document.getElementById('editProduct').showModal();
+}
+</script>
+{% endblock %}

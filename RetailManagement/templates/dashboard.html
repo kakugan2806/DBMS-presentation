@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · RetailFlow{% endblock %}
+{% block crumb %}Overview{% endblock %}
+{% block heading %}Good to see you{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <div class="hero-kicker">RETAIL OPERATIONS</div>
+        <h2>Everything important,<br><span>in one place.</span></h2>
+        <p>Monitor your catalogue, customers, suppliers and sales without leaving the dashboard.</p>
+        <div class="hero-actions">
+            <a class="button button-light" href="{{ url_for('products') }}">Open inventory <span>→</span></a>
+            <a class="hero-link" href="{{ url_for('orders') }}">View orders</a>
+        </div>
+    </div>
+    <div class="hero-art">
+        <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div>
+        <div class="hero-box"><span>RM</span></div>
+        <div class="floating-card fc-one"><b>{{ counts.products }}</b><small>Products</small></div>
+        <div class="floating-card fc-two"><b>{{ counts.orders }}</b><small>Orders</small></div>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <a class="metric-card" href="{{ url_for('products') }}">
+        <div class="metric-icon blue">▦</div>
+        <div><span>PRODUCTS</span><strong>{{ counts.products }}</strong><small>Inventory catalogue</small></div>
+        <span class="metric-arrow">↗</span>
+    </a>
+    <a class="metric-card" href="{{ url_for('customers') }}">
+        <div class="metric-icon violet">♙</div>
+        <div><span>CUSTOMERS</span><strong>{{ counts.customers }}</strong><small>Registered accounts</small></div>
+        <span class="metric-arrow">↗</span>
+    </a>
+    <a class="metric-card" href="{{ url_for('suppliers') }}">
+        <div class="metric-icon green">◈</div>
+        <div><span>SUPPLIERS</span><strong>{{ counts.suppliers }}</strong><small>Supply partners</small></div>
+        <span class="metric-arrow">↗</span>
+    </a>
+    <a class="metric-card" href="{{ url_for('orders') }}">
+        <div class="metric-icon orange">▤</div>
+        <div><span>ORDERS</span><strong>{{ counts.orders }}</strong><small>Total transactions</small></div>
+        <span class="metric-arrow">↗</span>
+    </a>
+</section>
+
+<div class="dashboard-grid">
+    <section class="panel large-panel">
+        <div class="panel-header">
+            <div><span class="section-kicker">ACTIVITY</span><h3>Recent orders</h3></div>
+            <a class="text-link" href="{{ url_for('orders') }}">View all →</a>
+        </div>
+        <div class="table-scroll">
+        <table class="data-table compact">
+            <thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
+            <tbody>
+            {% for o in recent_orders %}
+            <tr>
+                <td><strong class="mono">#{{ o.OrderID }}</strong></td>
+                <td>{{ o.firstname or '' }} {{ o.lastname or '' }}</td>
+                <td class="muted-cell">{{ o.OrderDate }}</td>
+                <td><strong>₹{{ o.TotalAmount }}</strong></td>
+                <td><span class="status-chip">{{ o.PaymentStatus }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="empty-state">No orders found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    <section class="panel quick-panel">
+        <div class="panel-header"><div><span class="section-kicker">QUICK ACTIONS</span><h3>Jump to a task</h3></div></div>
+        <a class="quick-action" href="{{ url_for('products') }}"><span class="quick-icon blue">+</span><div><strong>Add a product</strong><small>Update your catalogue</small></div><span>→</span></a>
+        <a class="quick-action" href="{{ url_for('customers') }}"><span class="quick-icon violet">+</span><div><strong>Add a customer</strong><small>Create a customer record</small></div><span>→</span></a>
+        <a class="quick-action" href="{{ url_for('suppliers') }}"><span class="quick-icon green">+</span><div><strong>Add a supplier</strong><small>Register a partner</small></div><span>→</span></a>
+        <a class="quick-action" href="{{ url_for('inventorylog') }}"><span class="quick-icon orange">↕</span><div><strong>Check inventory</strong><small>Review stock movements</small></div><span>→</span></a>
+    </section>
+</div>
+{% endblock %}

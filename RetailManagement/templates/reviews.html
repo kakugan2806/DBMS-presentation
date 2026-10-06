@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Reviews · RetailFlow{% endblock %}
+{% block crumb %}Insights / Reviews{% endblock %}
+{% block heading %}Reviews{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Customer feedback across your product catalogue.</p></div>
+<section class="panel"><div class="table-scroll"><table class="data-table">
+<thead><tr><th>REVIEW</th><th>CUSTOMER</th><th>PRODUCT</th><th>RATING</th><th>COMMENT</th><th>DATE</th></tr></thead>
+<tbody>{% for r in reviews %}<tr><td class="mono">#{{ r.ReviewID }}</td><td>{{ r.CustomerName }}</td><td><strong>{{ r.ProductName or r.ProductID }}</strong></td><td><span class="rating">★ {{ r.Rating }}/5</span></td><td>{{ r.Comment }}</td><td class="muted-cell">{{ r.ReviewDate }}</td></tr>{% else %}<tr><td colspan="6" class="empty-state">No reviews found.</td></tr>{% endfor %}</tbody>
+</table></div></section>
+{% endblock %}

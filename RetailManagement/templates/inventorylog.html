@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Inventory Log · RetailFlow{% endblock %}
+{% block crumb %}Insights / Inventory{% endblock %}
+{% block heading %}Inventory Log{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Stock adjustments and inventory movement history.</p></div>
+<section class="panel"><div class="table-scroll"><table class="data-table">
+<thead><tr><th>LOG</th><th>PRODUCT</th><th>ADJUSTMENT</th><th>REASON</th><th>DATE</th></tr></thead>
+<tbody>{% for l in inventorylog %}<tr><td class="mono">#{{ l.LogID }}</td><td><strong>{{ l.ProductName or l.ProductID }}</strong></td><td><span class="{% if l.Adjustment < 0 %}negative-number{% else %}positive-number{% endif %}">{% if l.Adjustment > 0 %}+{% endif %}{{ l.Adjustment }}</span></td><td>{{ l.Reason }}</td><td class="muted-cell">{{ l.LogDate }}</td></tr>{% else %}<tr><td colspan="5" class="empty-state">No inventory logs found.</td></tr>{% endfor %}</tbody>
+</table></div></section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Order Details · RetailFlow{% endblock %}
+{% block crumb %}Sales / Order Details{% endblock %}
+{% block heading %}Order Details{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Line items that make up each order.</p></div>
+<section class="panel"><div class="table-scroll"><table class="data-table">
+<thead><tr><th>DETAIL</th><th>ORDER</th><th>PRODUCT</th><th>QTY</th><th>UNIT PRICE</th><th>LINE TOTAL</th></tr></thead>
+<tbody>{% for d in orderdetails %}<tr><td class="mono">#{{ d.OrderDetailID }}</td><td class="mono">#{{ d.OrderID }}</td><td><strong>{{ d.ProductName or d.ProductID }}</strong></td><td>{{ d.Quantity }}</td><td>₹{{ d.UnitPrice }}</td><td><strong>₹{{ d.LineTotal }}</strong></td></tr>{% else %}<tr><td colspan="6" class="empty-state">No order details found.</td></tr>{% endfor %}</tbody>
+</table></div></section>
+{% endblock %}

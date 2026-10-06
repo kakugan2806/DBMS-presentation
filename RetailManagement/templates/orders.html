@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Orders · RetailFlow{% endblock %}
+{% block crumb %}Sales / Orders{% endblock %}
+{% block heading %}Orders{% endblock %}
+{% block content %}
+<div class="page-toolbar"><p class="page-subtitle">Track customer orders, payments and fulfilment.</p><div class="filter-hint">Read-only overview</div></div>
+<div class="filter-bar"><div class="search-box"><span>⌕</span><input id="orderSearch" onkeyup="filterTable('orderSearch','orderTable')" placeholder="Search order, customer or tracking number..."></div><div class="filter-hint">{{ orders|length }} records</div></div>
+<section class="panel"><div class="table-scroll"><table class="data-table" id="orderTable">
+<thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>PAYMENT</th><th>METHOD</th><th>TRACKING</th></tr></thead>
+<tbody>{% for o in orders %}<tr><td><strong class="mono">#{{ o.OrderID }}</strong></td><td>{{ o.firstname or '' }} {{ o.lastname or '' }}</td><td class="muted-cell">{{ o.OrderDate }}</td><td><strong>₹{{ o.TotalAmount }}</strong></td><td><span class="status-chip">{{ o.PaymentStatus }}</span></td><td>{{ o.PaymentMethod }}</td><td class="mono">{{ o.TrackingNumber }}</td></tr>{% else %}<tr><td colspan="7" class="empty-state">No orders found.</td></tr>{% endfor %}</tbody>
+</table></div></section>
+<script>function filterTable(i,t){const q=document.getElementById(i).value.toLowerCase();document.querySelectorAll('#'+t+' tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')}</script>
+{% endblock %}
